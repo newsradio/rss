@@ -16,10 +16,11 @@ publishes a clean RSS 2.0 feed with no third-party branding.
 
 Use this URL in Futuri for the **Pensacola News** feed:
 
-`https://raw.githubusercontent.com/newsradio/rss/main/feed.xml`
+`https://newsradio.github.io/rss/feed.xml`
 
-GitHub Pages is not required. The feed is published directly from the public
-repository and refreshed automatically by GitHub Actions.
+The workflow publishes the feed through GitHub Pages so Futuri receives it with
+the correct XML-compatible web headers. It refreshes automatically through
+GitHub Actions.
 
 The scheduled workflow checks for stories every 15 minutes. GitHub schedules can
 occasionally run late, but no manual updating is normally needed.
