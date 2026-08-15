@@ -1,0 +1,9 @@
+{
+  "source_feed": "https://www.newsradio923.com/blog-feed.xml",
+  "site_url": "https://www.newsradio923.com/local",
+  "feed_title": "NewsRadio 92.3 Local News",
+  "feed_description": "Full local news stories from NewsRadio 92.3 Pensacola",
+  "output_file": "feed.xml",
+  "category": "News",
+  "max_items": 20
+}
