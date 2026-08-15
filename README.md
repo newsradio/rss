@@ -18,9 +18,10 @@ Use this URL in Futuri for the **Pensacola News** feed:
 
 `https://newsradio.github.io/rss/feed.xml`
 
-The workflow publishes the feed through GitHub Pages so Futuri receives it with
-the correct XML-compatible web headers. It refreshes automatically through
-GitHub Actions.
+In **Settings → Pages**, set **Source** to **Deploy from a branch**, choose
+`main` and `/ (root)`, then click **Save**. This makes Futuri receive the feed
+with the correct XML-compatible web headers. The feed refreshes automatically
+through GitHub Actions.
 
 The scheduled workflow checks for stories every 15 minutes. GitHub schedules can
 occasionally run late, but no manual updating is normally needed.
