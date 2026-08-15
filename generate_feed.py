@@ -118,7 +118,7 @@ def build() -> Path:
         sub(
             channel,
             "atom:link",
-            href=f"https://raw.githubusercontent.com/{owner}/{repo}/main/{output_name}",
+            href=f"https://{owner}.github.io/{repo}/{output_name}",
             rel="self",
             type="application/rss+xml",
         )
