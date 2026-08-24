@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import html
 import json
-import mimetypes
 import os
 import re
 import sys
@@ -33,7 +32,7 @@ def cdata(value: str) -> str:
     return value or ""
 
 
-def clean_article_html(url: str) -> tuple[str, str | None]:
+def clean_article_html(url: str) -> str:
     response = requests.get(url, headers=HEADERS, timeout=35)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, "html.parser")
@@ -42,7 +41,7 @@ def clean_article_html(url: str) -> tuple[str, str | None]:
     if not viewer:
         raise ValueError("Wix article body was not found")
 
-    for unwanted in viewer.select("script, style, button, form, noscript"):
+    for unwanted in viewer.select("script, style, button, form, noscript, img, figure"):
         unwanted.decompose()
 
     # Wix inserts empty bookkeeping divs between real content blocks.
@@ -66,9 +65,7 @@ def clean_article_html(url: str) -> tuple[str, str | None]:
     article_html = "".join(str(child) for child in viewer.children).strip()
     article_html = re.sub(r"(?:<br\s*/?>\s*){3,}", "<br><br>", article_html)
 
-    og_image = soup.select_one('meta[property="og:image"]')
-    image_url = og_image.get("content") if og_image else None
-    return article_html, image_url
+    return article_html
 
 
 def text_preview(article_html: str, limit: int = 350) -> str:
@@ -137,21 +134,11 @@ def build() -> Path:
         if not url:
             continue
         try:
-            full_html, page_image = clean_article_html(url)
+            full_html = clean_article_html(url)
         except Exception as exc:  # Keep the feed alive if one Wix page changes.
             failures.append(f"{url}: {exc}")
             fallback = entry.get("description", "")
             full_html = f"<p>{html.escape(BeautifulSoup(fallback, 'html.parser').get_text(' ', strip=True))}</p>"
-            page_image = None
-
-        full_html += f'<p><a href="{html.escape(url, quote=True)}" target="_blank" rel="noopener"><strong>View this story on NewsRadio923.com</strong></a></p>'
-        image_url = None
-        image_type = None
-        if entry.get("enclosures"):
-            image_url = entry.enclosures[0].get("href")
-            image_type = entry.enclosures[0].get("type")
-        image_url = image_url or page_image
-        image_type = image_type or (mimetypes.guess_type(image_url)[0] if image_url else None) or "image/jpeg"
 
         item = sub(channel, "item")
         sub(item, "title", entry.get("title", "Untitled"))
@@ -163,9 +150,6 @@ def build() -> Path:
         sub(item, "category", CONFIG.get("category", "News"))
         sub(item, "description", text_preview(full_html))
         sub(item, "content:encoded", cdata(full_html))
-        if image_url:
-            sub(item, "enclosure", url=image_url, length="0", type=image_type)
-            sub(item, "media:content", url=image_url, medium="image", type=image_type)
         included += 1
         time.sleep(0.15)
 
