@@ -7,10 +7,10 @@ publishes a clean RSS 2.0 feed with no third-party branding.
 ## What Futuri receives
 
 - Headline, publication date, author, category and permanent story link
-- Lead image in both RSS `enclosure` and Media RSS formats
+- No image fields, so Futuri can use its image-free story layout
 - Plain-text preview in `description`
 - Entire formatted story in `content:encoded`
-- A station-branded link back to the original story
+- No redundant “View this story” link after the complete article
 
 ## Futuri feed URL
 
