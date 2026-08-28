@@ -32,6 +32,16 @@ def cdata(value: str) -> str:
     return value or ""
 
 
+def entry_image(entry) -> tuple[str, str] | None:
+    """Return (url, mime_type) for the entry's enclosure image, if any."""
+    for enc in entry.get("enclosures", []):
+        href = enc.get("href", "")
+        mime = enc.get("type", "image/jpeg")
+        if href and mime.startswith("image/"):
+            return href, mime
+    return None
+
+
 def clean_article_html(url: str) -> str:
     response = requests.get(url, headers=HEADERS, timeout=35)
     response.raise_for_status()
@@ -150,6 +160,11 @@ def build() -> Path:
         sub(item, "category", CONFIG.get("category", "News"))
         sub(item, "description", text_preview(full_html))
         sub(item, "content:encoded", cdata(full_html))
+        image = entry_image(entry)
+        if image:
+            image_url, image_type = image
+            sub(item, "enclosure", url=image_url, type=image_type, length="0")
+            sub(item, "media:content", url=image_url, type=image_type, medium="image")
         included += 1
         time.sleep(0.15)
 
