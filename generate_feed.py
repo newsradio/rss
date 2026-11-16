@@ -94,7 +94,7 @@ def sub(parent: ET.Element, name: str, value: str | None = None, **attrs) -> ET.
 
 
 def build() -> Path:
-    source = requests.get(CONFIG["source_feed"], headers=HEADERS, timeout=35)
+    source = requests.get(f'{CONFIG["source_feed"]}?_cb={int(time.time())}', headers=HEADERS, timeout=35)
     source.raise_for_status()
     parsed = feedparser.parse(source.content)
     if parsed.bozo and not parsed.entries:
